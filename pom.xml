@@ -8,17 +8,22 @@
 		<version>2.3.1.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.</groupId>
+	<groupId>com.comexport</groupId>
 	<artifactId>comexport</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>comexport</name>
-	<description>Demo Spring Boot project for comexpo job interview practical test</description>
+	<description>Demo Spring Boot project for comexport job interview practical test</description>
 
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+		  <groupId>mysql</groupId> 
+		  <artifactId>mysql-connector-java</artifactId> 
+		  <scope>runtime</scope> 
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -50,6 +55,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 	</dependencies>
 
 	<build>
