@@ -1,6 +1,7 @@
 package com.comexport.DTOs;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,9 @@ public class UserOutputDTO {
     
         /** The user's address. */
         private String address = null;
+
+        /** The user's contact list */
+        private List<ContactOutputDTO> contacts = null;
         
         /** The user's creation date. */
         private Date creationDate = null;

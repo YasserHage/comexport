@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.comexport.DTOs.ContactInputDTO;
+import com.comexport.DTOs.ContactOutputDTO;
 import com.comexport.DTOs.UserInputDTO;
 import com.comexport.DTOs.UserOutputDTO;
+import com.comexport.Models.Contact;
 import com.comexport.Models.User;
+import com.comexport.Services.ContactService;
 import com.comexport.Services.UserService;
+import com.comexport.Transformations.ContactTransformation;
 import com.comexport.Transformations.UserTransformation;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,15 +39,27 @@ public class UserController {
 
     /**Logger from UserController.*/
 	private Logger logger = LogManager.getLogger(UserController.class);
-	
+    
+    /** 
+    * ContactService class meant to run all CRUD verbs.
+    */
+    @Autowired
+    private ContactService contactService;
+
     /**
-    * UserService, class meant to run all CRUD verbs.
+    * UserService class meant to run all CRUD verbs.
     */
     @Autowired
     private UserService userService;
    
     /**
-    * UserTransformation, used as an utility regarding the user's transformation.
+    * ContactTransformation class used as an utility regarding the contact's transformation.
+    */
+    @Autowired
+    private ContactTransformation contactTransformation;
+
+    /**
+    * UserTransformation class used as an utility regarding the user's transformation.
     */
     @Autowired
     private UserTransformation userTransformation;
@@ -73,6 +90,18 @@ public class UserController {
             logger.info("There is no user on database.");
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+
+        // Fetching contacts from database
+        List<Contact> contacts = contactService.findAll();
+        for (UserOutputDTO user : users) {
+            List<ContactOutputDTO> contactOutputDTOs = contactTransformation.convert(contacts
+                .stream()
+                .filter(c -> c.getOwner() == user.getId())
+                .collect(Collectors.toList()));
+            user.setContacts(contactOutputDTOs);
+        }
+
+
         logger.info("Fetched {} users.", users.size());
         return new ResponseEntity(users, HttpStatus.OK);
     }
@@ -99,8 +128,18 @@ public class UserController {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         
+        //Fetching user's contacts from database
+        List<ContactOutputDTO> contacts =
+            contactTransformation.convert(
+                this.contactService
+                .findAll()
+                .stream()
+                .filter(c -> c.getOwner() == fetchedUser.get().getId())
+                .collect(Collectors.toList()));
+
         // If there is a fetched user from database
         UserOutputDTO userOutputDTO = userTransformation.convert(fetchedUser.get());
+        userOutputDTO.setContacts(contacts);
         logger.info("Fetched {}.", userOutputDTO);
         return new ResponseEntity(userOutputDTO, HttpStatus.OK);
     }
@@ -127,7 +166,15 @@ public class UserController {
         
         // Saving the user!
         this.userService.save(user);
-
+        
+        if(!userInputDTO.getContacts().isEmpty()){
+            List<ContactInputDTO> contacts = userInputDTO.getContacts();
+            // Saving the user contacts
+            for (ContactInputDTO contact : contacts) {
+                contact.setOwner(user);
+                contactService.save(contactTransformation.convert(contact));
+            }
+        }
         //Building the location header
         URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()
@@ -165,11 +212,11 @@ public class UserController {
              return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        // Updating the fetched user's values...
+        // Updating the fetched user's values
         fetchedUser.get().setEmail(user.getEmail());
         fetchedUser.get().setDateOfBirth(user.getDateOfBirth());
         fetchedUser.get().setAddress(user.getAddress());
-        
+
         logger.info("Updating the user {} on database...", user);
         userService.save(fetchedUser.get());
 
@@ -187,6 +234,21 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Integer id) {
         logger.info("Deleting the user with id {} from the database...", id);
+        
+        // Fetching user's contacts
+        List<Contact> contacts = this.contactService
+        .findAll()
+        .stream()
+        .filter(c -> c.getOwner() == id)
+        .collect(Collectors.toList());
+
+        // Deleting user's contacts
+        for (Contact contact : contacts) {
+            contactService.delete(contact.getId());
+        }
+
+        logger.info("Deletion completed.");
+        // Deleting user
         userService.delete(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

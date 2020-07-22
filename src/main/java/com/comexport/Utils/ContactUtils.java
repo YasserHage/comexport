@@ -4,6 +4,7 @@ package com.comexport.Utils;
 import com.comexport.DTOs.ContactInputDTO;
 import com.comexport.DTOs.ContactOutputDTO;
 import com.comexport.Models.Contact;
+import com.comexport.Models.User;
 
 import org.springframework.stereotype.Service;
 

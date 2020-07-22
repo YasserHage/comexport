@@ -35,13 +35,13 @@ public class ContactController {
 	private Logger logger = LogManager.getLogger(ContactController.class);
 	
     /**
-    * ContactService, class meant to run all CRUD verbs.
+    * ContactService class meant to run all CRUD verbs.
     */
     @Autowired
     private ContactService contactService;
    
     /**
-    * ContactTransformation, used as an utility regarding the contact's transformation.
+    * ContactTransformation used as an utility regarding the contact's transformation.
     */
     @Autowired
     private ContactTransformation contactTransformation;

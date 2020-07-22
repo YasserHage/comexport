@@ -30,7 +30,7 @@ public class ContactTransformation {
 	public ContactOutputDTO convert(Contact contact) {
 		return this.contactUtils.toContactOutputDTO(contact);
 	}
-	
+
 	/**
 	 * This convert(ContactInputDTO) method will transform a ContactInputDTO into a Contact.
 	 * 
@@ -44,7 +44,7 @@ public class ContactTransformation {
 	/**
 	 * It will transform Collection<Contact> into List<ContactOutputDTO>.
 	 * 
-	 * @param contact				- the collection that will be transformed into List<ContactOutputDTO>.
+	 * @param contacts					- the collection that will be transformed into List<ContactOutputDTO>.
 	 * @return List<ContactOutputDTO>	- the transformed List<ContactOutputDTO>.
 	 */
 	public List<ContactOutputDTO> convert(Collection<Contact> contacts){
@@ -52,6 +52,5 @@ public class ContactTransformation {
 				.stream()
 				.map(this :: convert)
 				.collect(Collectors.toList());
-    }
-    
+	}    
 }
