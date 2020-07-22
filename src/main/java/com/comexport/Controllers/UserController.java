@@ -2,7 +2,6 @@ package com.comexport.Controllers;
 
 
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import com.comexport.Transformations.UserTransformation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +52,7 @@ public class UserController {
     * with all the users. The list can be filtered with the users name, email and date of birth.
     * @param name            - An optional filter regarding the user's name.
     * @param email           - An optional filter regarding the user's email.
-    * @param dateOfBirth     - An optional filter regarding the user's date of birth.
+    * @param dateOfBirth     - An optional filter regarding the user's date of birth in milliseconds.
     * @return ResponseEntity - A 200 OK with an UserOutputDTO list 
     * if it have found at least one user or a 404 Not Found if it haven't.
     */
@@ -116,7 +114,6 @@ public class UserController {
     *  or a 400 Bad Request if they aren't.
     */
     @PostMapping
-    //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity post(@RequestBody UserInputDTO userInputDTO) {
         
         if(userInputDTO.getName() == null || userInputDTO.getEmail() == null || userInputDTO.getDateOfBirth() == null) {
@@ -142,7 +139,7 @@ public class UserController {
         responseHeaders.setLocation(location);
 
         logger.info("User created with id {}", user.getId());
-        return new ResponseEntity(responseHeaders, HttpStatus.CREATED);  //.created(location).build();
+        return new ResponseEntity(responseHeaders, HttpStatus.CREATED);
     }
    
     /**
@@ -181,11 +178,10 @@ public class UserController {
     }
    
     /**
-    * The put(UserInputDTO, Integer) method will settup a Http Put Request endpoint 
-    * that will replace an existing user with a given id by the new given user.
+    * The delete(UserInputDTO, Integer) method will settup a Http Delete Request endpoint 
+    * that will delete an existing user with a given id.
     * 
-    * @param  id              - The id of the user to be replaced. 
-    * @param  userInputDTO    - the user to be replaced.
+    * @param  id              - The id of the user to be deleted.
     * @return ResponseEntity  - A 204 No Content if the Deletion was successfull.
     */
     @DeleteMapping("/{id}")
