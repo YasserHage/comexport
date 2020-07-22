@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/comexport/contacts")
 public class ContactController {
@@ -55,6 +59,11 @@ public class ContactController {
     * if it have found at least one contact or a 404 Not Found if it haven't.
     */
     @GetMapping
+    @ApiOperation(value = "Get a list of contacts that may be filtered")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved at least one contact"),
+        @ApiResponse(code = 404, message = "No contact were found on the database")
+    })
     public ResponseEntity get(Optional<Integer> owner) {
         logger.info("Fetching contacts from database...");
         List<ContactOutputDTO> contacts =
@@ -82,6 +91,11 @@ public class ContactController {
     * with the given id or a 404 Not Found if it haven't.
     */
     @GetMapping("/{id}")
+    @ApiOperation(value = "Get an contact by it's id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved the contact"),
+        @ApiResponse(code = 404, message = "The contact was not found on the database")
+    })
     public ResponseEntity get(@PathVariable Integer id) {
 
         logger.info("Fetching contact {} from database...", id);
@@ -109,6 +123,10 @@ public class ContactController {
     * @return ResponseEntity     - A 201 Created.
     */
     @PostMapping
+    @ApiOperation(value = "Insert a new contact into the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Successfully created the contact")
+    })
     public ResponseEntity post(@RequestBody ContactInputDTO contactInputDTO) {
 
         Contact contact = contactTransformation.convert(contactInputDTO);
@@ -141,6 +159,11 @@ public class ContactController {
     *  or a 404 Not Found if no contact with the given id was found.
     */
     @PutMapping("/{id}")
+    @ApiOperation(value = "Update a contact on the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Successfully updated the contact"),
+        @ApiResponse(code = 404, message = "The contact to be updated was not found")
+    })
     public ResponseEntity put(@RequestBody ContactInputDTO contactInputDTO, @PathVariable Integer id) {
         
         Contact contact = contactTransformation.convert(contactInputDTO);
@@ -175,6 +198,10 @@ public class ContactController {
     * @return ResponseEntity  - A 204 No Content if the Deletion was successfull.
     */
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete an contact into the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Successfully deleted the contact")
+    })
     public ResponseEntity delete(@PathVariable Integer id) {
         logger.info("Deleting the contact with id {} from the database...", id);
         contactService.delete(id);

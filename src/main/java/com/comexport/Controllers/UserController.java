@@ -33,6 +33,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/comexport/users")
 public class UserController {
@@ -74,6 +78,11 @@ public class UserController {
     * if it have found at least one user or a 404 Not Found if it haven't.
     */
     @GetMapping
+    @ApiOperation(value = "Get a list of users that may be filtered")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved at least one user"),
+        @ApiResponse(code = 404, message = "No user were found on the database")
+    })
     public ResponseEntity get(Optional<String> name, Optional<String> email, Optional<Long> dateOfBirth) {
         logger.info("Fetching users from database...");
         List<UserOutputDTO> users =
@@ -115,6 +124,11 @@ public class UserController {
     * with the given id or a 404 Not Found if it haven't.
     */
     @GetMapping("/{id}")
+    @ApiOperation(value = "Get an user by it's id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved the user"),
+        @ApiResponse(code = 404, message = "The user was not found on the database")
+    })
     public ResponseEntity get(@PathVariable Integer id) {
 
         logger.info("Fetching user {} from database...", id);
@@ -153,6 +167,11 @@ public class UserController {
     *  or a 400 Bad Request if they aren't.
     */
     @PostMapping
+    @ApiOperation(value = "Insert a new user into the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Successfully created the user"),
+        @ApiResponse(code = 400, message = "The user's name, email or date of birth was not informed")
+    })
     public ResponseEntity post(@RequestBody UserInputDTO userInputDTO) {
         
         if(userInputDTO.getName() == null || userInputDTO.getEmail() == null || userInputDTO.getDateOfBirth() == null) {
@@ -199,6 +218,11 @@ public class UserController {
     *  or a 404 Not Found if no user with the given id was found.
     */
     @PutMapping("/{id}")
+    @ApiOperation(value = "Update a user on the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Successfully updated the user"),
+        @ApiResponse(code = 404, message = "The user to be updated was not found")
+    })
     public ResponseEntity put(@RequestBody UserInputDTO userInputDTO, @PathVariable Integer id) {
         
         User user = userTransformation.convert(userInputDTO);
@@ -232,6 +256,10 @@ public class UserController {
     * @return ResponseEntity  - A 204 No Content if the Deletion was successfull.
     */
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete an user into the database")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Successfully deleted the user")
+    })
     public ResponseEntity delete(@PathVariable Integer id) {
         logger.info("Deleting the user with id {} from the database...", id);
         
